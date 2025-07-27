@@ -1,11 +1,21 @@
+from typing import Union
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List
 from models import Book
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-books: List[Book] = []
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=["http://localhost:4200"],
+  allow_credentials=True,
+  allow_methods=["*"],
+  allow_headers=["*"],
+)
+
+# books: List[Book] = []
 
 books: List[Book] = [
     Book(id=1, title="1984", author="George Orwell", genre="Dystopian"),
@@ -34,13 +44,13 @@ def update_book(book_id: int, updated_book: Book):
   for i, book in enumerate(books):
     if book.id == book_id:
         books[i] = updated_book
-        return update_book
+        return updated_book
     raise HTTPException(status_code=404, detail="Book not found")
 
-@app.delete("/book/{book_id}")
+@app.delete("/books/{book_id}")
 def delete_book(book_id: int):
-  for i, book in enumerate(bookd):
+  for i, book in enumerate(books):
     if book.id == book_id:
       books.pop(i)
       return {"message": "Book delted"}
-      raise HTTPException(status_code=404, detail="Book not found")
+  raise HTTPException(status_code=404, detail="Book not found")
